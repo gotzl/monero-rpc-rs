@@ -69,7 +69,7 @@ pub struct BlockTemplate {
 }
 
 #[derive(Deserialize)]
-pub(crate) struct BlockHeaderResponseR {
+pub struct BlockHeaderResponseR {
     pub block_size: u64,
     pub depth: u64,
     pub difficulty: u64,
@@ -555,6 +555,97 @@ pub struct KeyImageImportResponse {
     #[serde(with = "amount::serde::as_pico")]
     pub unspent: Amount,
 }
+
+#[derive(Deserialize)]
+pub struct GetInfoResponse {
+    pub adjusted_time: u64,
+    pub alt_blocks_count: u64,
+    pub block_size_limit: u64,
+    pub block_size_median: u64,
+    pub block_weight_limit: u64,
+    pub block_weight_median: u64,
+    pub bootstrap_daemon_address: String,
+    pub busy_syncing: bool,
+    pub credits: u64,
+    pub cumulative_difficulty: u64,
+    pub cumulative_difficulty_top64: u64,
+    pub database_size: u64,
+    pub difficulty: u64,
+    pub difficulty_top64: u64,
+    pub free_space: u64,
+    pub grey_peerlist_size: u64,
+    pub height: u64,
+    pub height_without_bootstrap: u64,
+    pub incoming_connections_count: u64,
+    pub mainnet: bool,
+    pub nettype: String,
+    pub offline: bool,
+    pub outgoing_connections_count: u64,
+    pub restricted: bool,
+    pub rpc_connections_count: u64,
+    pub stagenet: bool,
+    pub start_time: u64,
+    pub status: String,
+    pub synchronized: bool,
+    pub target: u64,
+    pub target_height: u64,
+    pub testnet: bool,
+    pub top_block_hash: String,
+    pub top_hash: String,
+    pub tx_count: u64,
+    pub tx_pool_size: u64,
+    pub untrusted: bool,
+    pub update_available: bool,
+    pub version: String,
+    pub was_bootstrap_ever_used: bool,
+    pub white_peerlist_size: u64,
+    pub wide_cumulative_difficulty: String,
+    pub wide_difficulty: String,
+}
+
+#[derive(Deserialize)]
+pub struct SyncInfoResponse {
+    pub credits: u64,
+    pub height: u64,
+    pub next_needed_pruning_seed: u64,
+    // "overview": "[]",
+    // "peers": [],
+    pub status: String,
+    pub target_height: u64,
+    pub top_hash: String,
+    pub untrusted: bool,
+}
+
+#[derive(Deserialize)]
+pub struct GetLastBlockHeaderResponse {
+    pub block_header: BlockHeaderResponseR,
+    pub credits: u64,
+    pub status: String,
+    pub top_hash: String,
+    pub untrusted: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MiningStatusResponse {
+    pub active: bool,
+    pub address: String,
+    pub bg_idle_threshold: u64,
+    pub bg_ignore_battery: bool,
+    pub bg_min_idle_seconds: u64,
+    pub bg_target: u64,
+    pub block_reward: u64,
+    pub block_target: u64,
+    pub difficulty: u64,
+    pub difficulty_top64: u64,
+    pub is_background_mining_enabled: bool,
+    pub pow_algorithm: String,
+    pub speed: u64,
+    pub status: String,
+    pub threads_count: u64,
+    pub untrusted: bool,
+    pub wide_difficulty: String,
+}
+
 
 #[cfg(test)]
 mod tests {

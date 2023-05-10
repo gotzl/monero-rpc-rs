@@ -185,11 +185,17 @@ impl RemoteCaller {
 
         trace!(
             "Sending daemon RPC call: {:?}, with params {:?}",
-            method,
+            uri,
             json_params
         );
 
-        let req = client.post(uri).json(&json_params);
+        let req = {
+            if json_params == Params::None {
+                client.post(uri)
+            } else {
+                client.post(uri).json(&json_params)
+            }
+        };
 
         #[cfg(not(feature = "rpc_authentication"))]
         let rsp = req.send().await?.json::<T>().await?;
@@ -338,6 +344,11 @@ impl RpcClient {
     pub fn wallet(self) -> WalletClient {
         let Self { inner } = self;
         WalletClient { inner }
+    }
+
+    pub fn metrics(self) -> InfoClient {
+        let Self { inner } = self;
+        InfoClient { inner }
     }
 }
 
@@ -1288,6 +1299,46 @@ impl WalletClient {
         let minor = version.version - (major << 16);
 
         Ok((u16::try_from(major)?, u16::try_from(minor)?))
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct InfoClient {
+    inner: CallerWrapper,
+}
+
+impl InfoClient {
+    pub async fn get_info(&self) -> anyhow::Result<GetInfoResponse> {
+        let rsp = self
+            .inner
+            .request::<GetInfoResponse>("get_info", RpcParams::None)
+            .await?;
+
+        Ok(rsp)
+    }
+
+    pub async fn sync_info(&self) -> anyhow::Result<SyncInfoResponse> {
+        let rsp = self
+            .inner
+            .request::<SyncInfoResponse>("sync_info", RpcParams::None)
+            .await?;
+        Ok(rsp)
+    }
+
+    pub async fn last_block_header(&self) -> anyhow::Result<GetLastBlockHeaderResponse> {
+        let rsp = self
+            .inner
+            .request::<GetLastBlockHeaderResponse>("get_last_block_header", RpcParams::None)
+            .await?;
+        Ok(rsp)
+    }
+
+    pub async fn mining_status(&self) -> anyhow::Result<MiningStatusResponse> {
+        let rsp = self
+            .inner
+            .daemon_rpc_request::<MiningStatusResponse>("mining_status", RpcParams::None)
+            .await?;
+        Ok(rsp)
     }
 }
 
